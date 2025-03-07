@@ -63,3 +63,7 @@ p {
     pointer-events: none; 
     font-size: 12px;
 }
+
+#writeup {
+    padding-bottom: 100px;
+}

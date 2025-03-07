@@ -111,6 +111,7 @@ function setupSelector(){
         .default(targetPercentile)
         .on('onchange', (val) => {
             targetPercentile = +val 
+            // updateAxes();
             updateVis() 
         });
 
@@ -135,7 +136,6 @@ function setupSelector(){
             if(d3.select(this).property("id") == "xVariable"){
                 xVar = d3.select(this).property("value")
             }
-
             updateAxes();
             updateVis();
         })
@@ -151,8 +151,9 @@ function updateAxes(){
     xScale = d3.scaleBand()
         .domain(categories[xVar])
         .range([0, width]);
-
+    temp = d3.max(categories[xVar], key => allData.find(d => d.par_pctile === targetPercentile)[key])
     yScale = d3.scaleLinear()
+        //.domain([0, temp + (1/10) * temp])
         .domain([0, d3.max(allData, d => d3.max(categories[xVar], key => d[key]))])
         .range([height, 0]);
 
@@ -209,6 +210,7 @@ function updateVis(){
         .attr("width", xScale.bandwidth() - 10)
         .attr("height", d => height - yScale(currentData[d]))
         .attr("fill", d => colorScale(d))
+        .merge(bars)
         .on('mouseover', function (event, d) {
             d3.select('#tooltip')
                 .style("display", 'block') 
@@ -225,11 +227,11 @@ function updateVis(){
             d3.select(this) 
                 .style('stroke', 'none')
         })
-        .merge(bars)
         .transition()
         .duration(t)
         .attr("y", d => yScale(currentData[d]))
         .attr("height", d => height - yScale(currentData[d]))
+        
 
     bars.exit()
         .remove();      
