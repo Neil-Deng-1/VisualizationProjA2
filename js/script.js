@@ -3,16 +3,22 @@ console.log('D3 Version:', d3.version);
 const margin = { top: 80, right: 60, bottom: 60, left: 100 };
 const width = 800 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
-
-let allData = []
-let xVar = 'Income', yVar = 'Life_Expectancy', sizeVar = 'Population', targetYear = 2000
-let xScale, yScale, sizeScale
-
-const continents = ['Africa', 'Asia', 'Oceania', 'Americas', 'Europe']
-const colorScale = d3.scaleOrdinal(continents, d3.schemeSet2);
-const options = ['Income', 'Life_Expectancy', 'GDP', 'Population', 'Child_Deaths']
-
-const t = 1000;
+const t = 500;
+let targetPercentile = 50, xVar = "A", xScale, yScale, sizeScale
+const colorScale = d3.scaleOrdinal(d3.schemeSet2);
+const categories = {
+    "A" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
+    "B" : ["kfr_nativemom_aian_pooled", "kfr_nativemom_asian_pooled", "kfr_nativemom_black_pooled", "kfr_nativemom_hisp_pooled", "kfr_nativemom_white_pooled"],
+    "C" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
+    "D" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
+    "E" : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
+    "F" : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
+    "G" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
+    "H" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
+    "I" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
+    "J" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
+    "K" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
+};
 
 const svg = d3.select('#vis')
     .append('svg')
@@ -22,25 +28,74 @@ const svg = d3.select('#vis')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
 function init(){
-    d3.csv("./data/gapminder_subset.csv", 
-    function(d){
-        return {  
-        country: d.country,
-        continent: d.continent,
-        year: +d.year,
-        Life_Expectancy: +d.life_expectancy, 
-        Income: +d.income_per_person, 
-        GDP: +d.gdp_per_capita, 
-        Child_Deaths: +d.number_of_child_deaths,
-        Population: +d.population
-    }})
+    d3.csv("./data/table_1.csv", function(d){
+        return {
+            par_pctile: +d.par_pctile,
+
+            count_aian_pooled: +d.count_aian_pooled,
+            count_asian_pooled: +d.count_asian_pooled,
+            count_black_pooled: +d.count_black_pooled,
+            count_hisp_pooled: +d.count_hisp_pooled,
+            count_white_pooled: +d.count_white_pooled,
+
+            kfr_nativemom_aian_pooled: +d.kfr_nativemom_aian_pooled,
+            kfr_nativemom_asian_pooled: +d.kfr_nativemom_asian_pooled,
+            kfr_nativemom_black_pooled: +d.kfr_nativemom_black_pooled,
+            kfr_nativemom_hisp_pooled: +d.kfr_nativemom_hisp_pooled,
+            kfr_nativemom_white_pooled: +d.kfr_nativemom_white_pooled,
+
+            kid_college_black_female: +d.kid_college_black_female,
+            kid_college_black_male: +d.kid_college_black_male,
+            kid_college_white_female: +d.kid_college_white_female,
+            kid_college_white_male: +d.kid_college_white_male,
+
+            kid_hours_black_female: +d.kid_hours_black_female,
+            kid_hours_black_male: +d.kid_hours_black_male,
+            kid_hours_white_female: +d.kid_hours_white_female,
+            kid_hours_white_male: +d.kid_hours_white_male,
+
+            kid_jail_black_female: +d.kid_jail_black_female,
+            kid_jail_black_male: +d.kid_jail_black_male,
+            kid_jail_white_female: +d.kid_jail_white_female,
+            kid_jail_white_male: +d.kid_jail_white_male,
+
+            kid_no_hs_black_female: +d.kid_no_hs_black_female,
+            kid_no_hs_black_male: +d.kid_no_hs_black_male,
+            kid_no_hs_white_female: +d.kid_no_hs_white_female,
+            kid_no_hs_white_male: +d.kid_no_hs_white_male,
+
+            kid_pos_hours_black_female: +d.kid_pos_hours_black_female,
+            kid_pos_hours_black_male: +d.kid_pos_hours_black_male,
+            kid_pos_hours_white_female: +d.kid_pos_hours_white_female,
+            kid_pos_hours_white_male: +d.kid_pos_hours_white_male,
+
+            kid_wage_rank_black_female: +d.kid_wage_rank_black_female,
+            kid_wage_rank_black_male: +d.kid_wage_rank_black_male,
+            kid_wage_rank_white_female: +d.kid_wage_rank_white_female,
+            kid_wage_rank_white_male: +d.kid_wage_rank_white_male,
+
+            kir_black_female: +d.kir_black_female,
+            kir_black_male: +d.kir_black_male,
+            kir_white_female: +d.kir_white_female,
+            kir_white_male: +d.kir_white_male,
+
+            kir_1par_black_male: +d.kir_1par_black_male,
+            kir_1par_white_male: +d.kir_1par_white_male,
+            kir_2par_black_male: +d.kir_2par_black_male,
+            kir_2par_white_male: +d.kir_2par_white_male,
+
+            spouse_rank_black_female: +d.spouse_rank_black_female,
+            spouse_rank_black_male: +d.spouse_rank_black_male,
+            spouse_rank_white_female: +d.spouse_rank_white_female,
+            spouse_rank_white_male: +d.spouse_rank_white_male
+        };
+    })
     .then(data => {
             console.log(data)
             allData = data
             setupSelector()
             updateAxes()
             updateVis()
-            addLegend()
         })
     .catch(error => console.error('Error loading data:', error));
 }
@@ -48,29 +103,29 @@ function init(){
 function setupSelector(){
     let slider = d3
         .sliderHorizontal()
-        .min(d3.min(allData.map(d => +d.year))) 
-        .max(d3.max(allData.map(d => +d.year))) 
+        .min(d3.min(allData.map(d => +d.par_pctile))) 
+        .max(d3.max(allData.map(d => +d.par_pctile))) 
         .step(1)
-        .width(width)  
+        .width(width - 50)  
         .displayValue(true)
-        .default(targetYear)
+        .default(targetPercentile)
         .on('onchange', (val) => {
-            targetYear = +val 
+            targetPercentile = +val 
             updateVis() 
         });
 
     d3.select('#slider')
         .append('svg')
         .attr('width', width)
-        .attr('height', 100)
+        .attr('height', 75)
         .append('g')
         .attr('transform', 'translate(30,30)')
         .call(slider);
-
+        
     d3.selectAll('.variable')
         .each(function() {
             d3.select(this).selectAll('myOptions')
-            .data(options)
+            .data(Object.keys(categories))
             .enter()
             .append('option')
             .text(d => d) 
@@ -79,19 +134,13 @@ function setupSelector(){
         .on("change", function (event) {
             if(d3.select(this).property("id") == "xVariable"){
                 xVar = d3.select(this).property("value")
-            } else if(d3.select(this).property("id") == "yVariable"){
-                yVar = d3.select(this).property("value")
-            } else if(d3.select(this).property("id") == "sizeVariable"){
-                sizeVar = d3.select(this).property("value")
             }
-            
+
             updateAxes();
             updateVis();
         })
 
     d3.select('#xVariable').property('value', xVar)
-    d3.select('#yVariable').property('value', yVar)
-    d3.select('#sizeVariable').property('value', sizeVar)
 }
   
 function updateAxes(){
@@ -99,48 +148,25 @@ function updateAxes(){
     svg.selectAll('.grid').remove();
     svg.selectAll('.labels').remove();
 
-    xScale = d3.scaleLinear()
-        .domain([0, d3.max(allData, d => d[xVar])])
+    xScale = d3.scaleBand()
+        .domain(categories[xVar])
         .range([0, width]);
 
     yScale = d3.scaleLinear()
-        .domain([0, d3.max(allData, d => d[yVar])])
+        .domain([0, d3.max(allData, d => d3.max(categories[xVar], key => d[key]))])
         .range([height, 0]);
 
-    sizeScale = d3.scaleSqrt()
-        .domain([0, d3.max(allData, d => d[sizeVar])])
-        .range([4, 24]); 
-
+    const yAxis = d3.axisLeft(yScale)
     const xAxis = d3.axisBottom(xScale)
-        .tickFormat(d => d >= 1_000_000 ? d3.format(",")(d / 1_000_000) + "M" : d3.format(",")(d));
 
     svg.append("g")
         .attr("class", "axis")
         .attr("transform", `translate(0,${height})`)
         .call(xAxis);
 
-    const yAxis = d3.axisLeft(yScale)
-        .tickFormat(d => d >= 1_000_000 ? d3.format(",")(d / 1_000_000) + "M" : d3.format(",")(d));
-
     svg.append("g")
         .attr("class", 'axis')
         .call(yAxis);
-
-
-    // grid stuff
-
-    const xGrid = d3.axisBottom(xScale)
-        .ticks(15)
-        .tickSize(-height) // Extend across chart
-        .tickFormat("");
-
-    svg.append("g")
-        .attr("class", "grid x-grid")
-        .attr("transform", `translate(0,${height})`)
-        .call(xGrid)
-        .selectAll("line")
-        .style("stroke", "grey") 
-        .style("stroke-dasharray", "3,3") 
 
     const yGrid = d3.axisLeft(yScale)
         .ticks(15)
@@ -153,9 +179,6 @@ function updateAxes(){
         .selectAll("line")
         .style("stroke", "gray")
         .style("stroke-dasharray", "3,3")
-    
-    // end of grid stuff
-
 
     svg.append('text')
         .attr('class', 'labels')
@@ -164,95 +187,54 @@ function updateAxes(){
         .style('text-anchor', 'middle')
         .text(xVar);
 
-    svg.append('text')
-        .attr('class', 'labels')
-        .attr('transform', 'rotate(-90)')
-        .attr('x', -height / 2)
-        .attr('y', -margin.left + 40)
-        .style('text-anchor', 'middle')
-        .text(yVar);
+    // svg.append('text')
+    //     .attr('class', 'labels')
+    //     .attr('transform', 'rotate(-90)')
+    //     .attr('x', -height / 2)
+    //     .attr('y', -margin.left + 40)
+    //     .style('text-anchor', 'middle')
+    //     .text(yVar);
 }
   
 function updateVis(){
-    let currentData = allData.filter(d => d.year === targetYear)
+    let currentData = allData.find(d => d.par_pctile === targetPercentile);
+    let bars = svg.selectAll(".bar")
+        .data(categories[xVar], d => d);
 
-    svg.selectAll('.points')
-        .data(currentData, d => d.country)
-        .join(
-            function(enter){
-                return enter
-                .append('circle')
-                .attr('class', 'points')
-                .attr('cx', d => xScale(d[xVar])) 
-                .attr('cy', d => yScale(d[yVar])) 
-                .style('fill', d => colorScale(d.continent))
-                .style('opacity', .5) 
-                .attr('r', 0) 
-                .on('mouseover', function (event, d) {
-                    //console.log(d)
-                    d3.select('#tooltip')
-                        .style("display", 'block') 
-                        .html( 
-                        `<strong>${d.country}</strong><br/>
-                        Continent: ${d.continent}`)
-                        .style("left", (event.pageX + 20) + "px")
-                        .style("top", (event.pageY - 28) + "px");
-                    d3.select(this)
-                        .style('stroke', 'black')
-                        .style('stroke-width', '3px')
-                })
-                .on("mouseout", function (event, d) {
-                    d3.select('#tooltip')
-                        .style('display', 'none')
-                    d3.select(this) 
-                        .style('stroke', 'none')
-                })
-                .transition(t)
-                .attr('r', d => sizeScale(d[sizeVar])) 
-            },
+    bars.enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale(d) + 5)
+        .attr("y", d => yScale(currentData[d]))
+        .attr("width", xScale.bandwidth() - 10)
+        .attr("height", d => height - yScale(currentData[d]))
+        .attr("fill", d => colorScale(d))
+        .on('mouseover', function (event, d) {
+            d3.select('#tooltip')
+                .style("display", 'block') 
+                .html(`<strong>${d}</strong>: ${currentData[d]}`)
+                .style("left", (event.pageX + 20) + "px")
+                .style("top", (event.pageY - 28) + "px");
+            d3.select(this)
+                .style('stroke', 'black')
+                .style('stroke-width', '3px')
+        })
+        .on("mouseout", function (event, d) {
+            d3.select('#tooltip')
+                .style('display', 'none')
+            d3.select(this) 
+                .style('stroke', 'none')
+        })
+        .merge(bars)
+        .transition()
+        .duration(t)
+        .attr("y", d => yScale(currentData[d]))
+        .attr("height", d => height - yScale(currentData[d]))
 
-            function(update){
-                return update
-                .transition(t)
-                .attr('cx', d => xScale(d[xVar]))
-                .attr('cy', d => yScale(d[yVar]))
-                .attr('r',  d => sizeScale(d[sizeVar]))
-            },
-
-            function(exit){
-                return exit
-                .transition(t)
-                .attr('r', 0) 
-                .remove()
-            }
-
-        )
+    bars.exit()
+        .remove();      
 }
   
-function addLegend(){
-    let size = 10 
-    svg.selectAll('continentSquare')
-        .data(continents)
-        .enter()
-        .append('rect')
-        .attr('x', (d, i) => i * (size + 100) + 100)
-        .attr('y', -margin.top / 2)
-        .attr('width', size)
-        .attr('height', size)
-        .style('fill', d => colorScale(d));
-
-    svg.selectAll("continentName")
-        .data(continents)
-        .enter()
-        .append("text")
-        .attr("y", -margin.top/2 + size)
-        .attr("x", (d, i) => i * (size + 100) + 120)  
-        .style("fill", d => colorScale(d))
-        .text(d => d)
-        .attr("text-anchor", "left")
-        .style('font-size', '13px')
-}
-
 window.addEventListener('load', init);
 
 
