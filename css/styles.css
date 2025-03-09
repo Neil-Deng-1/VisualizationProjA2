@@ -13,7 +13,11 @@ h1 {
 h2{
     font-size: 18px;
 }
-p {
+li{
+    font-size: 14px;
+}
+
+.other {
     display: inline;
     font-size: 20px;
 }
@@ -68,7 +72,13 @@ p {
 }
 
 .writeup{
-    font-size: 14px;
     margin-left: 100px;
     margin-bottom: 200px;
+}
+.writeupHeader{
+    font-size: 18px;
+    font-weight: bold;
+}
+.writeupBody{
+    font-size: 14px;
 }
