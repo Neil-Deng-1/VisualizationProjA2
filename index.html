@@ -18,20 +18,69 @@
         </div>
         <div id="vis"></div>
     </div>
-    <h1>WriteUp</h1>
+    <div class="writeup">
+        <h1>Write Up</h1>
+        
     <p id="writeup"> 
-        Include a brief, clear write-up on your webpage:
+        <em>A brief introduction to your dataset, background and your chosen variable(s) or subset.</em><br>
+        <ul>
+            <li>This data set is the “National Statistics by Parent Income Percentile, Gender, and Race” from the Social Mobility Insights category of assigned databases. The dataset is 100 rows, one for each percentile of parent income (e.g 27th percentile is the bottom 27% of the distribution for parents ranked by income). Each row is composed of many columns of the outcomes of their children, born in the years 1978-83. The outcomes are then separated by race and gender.
+            </li>    
+        </ul>    
+        <br>
+        <em>Rationale for your design decisions. List your implemented interactions. Explain: How did you choose your particular visual encodings and interaction techniques? What alternatives did you consider and how did you arrive at your ultimate choices?</em>
+        <ul>
+            <li>The tools and the design of our data visualization were thoughtfully inspired by the lessons learned in our class’s lectures about visual encodings, user interaction, user perception, and more.
+            <li>Describing the tools, the slider on the top allows the user to view which percentile (1-99) of parent earners, and the drop down menu allows the user to select the type of child outcome. 
+            </li>
+            <li>For example, one can set the slider to 95% to query only parent earners in the 95th percentile, then the user can select the option for “Percentage of children with high school degree or GED by race and gender” to see just that. The user can then re-adjust the slider of percentiles to see how these rates change as parent income level changes.
+            </li>
+            <li>Through our visualization, one can observe the hidden stories told by the dataset. For instance, male children, both black and white, have been more incarcerated, fail to get a high school diploma or GED, and not attend college than their female counterparts at all income levels of their parents. 
+            </li>
+            <li>According to our lecture of “Task and Interaction”, both the the percentile-slider tool can and the dropdown menu be both classified as the interaction techniques of dynamic filtering and querying (requirement 1) since they allow the user to witness the outcomes of the children (dropdown menu) based on the parents’ income level (slider). The user can develop a thorough understanding of the entire dataset by viewing it from these many perspectives, contexts, and permutations of the variables.
+            </li>
+            <li>Our bar chart has its x-axis categories as the children’s race and genders, and its y-axis heights as the respective percentages of the children who fulfill the selected criteria. This choice of visual encoding is an example of the technique of reconfiguration, namely from the original, overwhelming table of raw data, to a cleaner, succinct bar chart. Now, by observing the heights of each bar, one can easily compare the effects of parental income on each gender and race of children.
+            </li>
+            <li>Our data visualization also employs the concept of data elaboration (requirement 2). When a user hovers over a bar, it becomes distinguished through an emboldened outline. Additionally, a tooltip appears, specifying the exact percentage value of the selected demographic and observed outcome.</li>
+            </li>
+        </ul>
+        <br>
+        
+        <em>References to data resources. Be sure to list the data source you used. If your work adapts or builds on existing visualization examples, please cite those as well.</em>
+        <ul>
+            <li>
+                National Statistics by Parent Income Percentile, Gender, and Race” at https://opportunityinsights.org/data/
+            </li>
+        </ul>
+        
+        <br><em> An overview of your development process. Describe how the work was split among the team members. Include a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application (in people-hours)? What aspects took the most time?</em>
+        
+        <ul>
+            <li>
+                (Team member Richard Gancayco’s report):
+                <ul>
+                    <li>First,regarding the topic selection, Neil had initially proposed working on the Chicago crime database, but from my analysis and suggestion we instead decided on the Social Mobility database, namely the dataset of inter-generational wealth and child outcomes by race and gender. The Chicago crime database seemed more difficult since it has more categorical than quantitative data, and it described geographical maps, concepts not-yet implemented and practiced in D3 by our class yet.</li>
+                    </li>
+                    <li>
+                        I had initially started my own independent version of the project by myself, since I wished to learn how to code D3 for the first time (not counting the class’s significantly guided labs) by myself, and make my own mistakes and lessons. However, I had hit a dead end after several frustrating hours (~7) struggling with D3 and Javascript coding, namely how to represent the raw data as a global data structure to be queried and updated, and represented as an svg graphic according to the user’s actions.
+                    </li>
+                    <li>
+                        Thankfully, Neil also had been working on his own version, one much more functional and comprehensive than mine. He had delegated some remaining tasks regarding the axes, labels, and this writeup to me. I have been able to learn much from studying Neil’s version of the code; and I hope to do better for the future projects.
+        
+                    </li>
+                </ul> 
+        </ul>
+        <br><em>If any: A brief summary of AI (e.g. ChatGPT) usage.</em><br>
+        <ul><li>
+            Little-to-none AI, perhaps inadvertently Google’s AI Gemini upon searching Javascript D3 syntax.<br>
 
-        A brief introduction to your dataset, background and your chosen variable(s) or subset.
-        
-        Rationale for your design decisions. List your implemented interactions. Explain: How did you choose your particular visual encodings and interaction techniques? What alternatives did you consider and how did you arrive at your ultimate choices?
-        
-        References to data resources. Be sure to list the data source you used. If your work adapts or builds on existing visualization examples, please cite those as well.
-        
-        An overview of your development process. Describe how the work was split among the team members. Include a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application (in people-hours)? What aspects took the most time?
-        
-        If any: A brief summary of AI (e.g. ChatGPT) usage.
+        </li></ul>
+
+
+
     </p>
+
+    </div>
 
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
