@@ -4,20 +4,20 @@ const margin = { top: 80, right: 60, bottom: 60, left: 100 };
 const width = 800 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 const t = 500;
-let targetPercentile = 50, xVar = "Percentage of children with college attendance", xScale, yScale, sizeScale
+let targetPercentile = 50, xVar = "Percentage of Children with College Attendance", xScale, yScale, sizeScale
 const colorScale = d3.scaleOrdinal(d3.schemeSet2);
 const categories = {
-    "Number of children born to parents at a given income percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
-    "Mean child family (household) income rank for children with mothers born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
-    "Percentage of children with college attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
-    "Mean number of weekly working hours over the past year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
-    "Percentage of children incarcerated." : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
-    "Percentage of children without a high school degree or GED." : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
-    "Percentage of children employed at age 30 or older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
-    "Mean wage rank of children at age 30 or older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
-    "Mean child individual income rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
-    "Mean child individual income rank for children with single parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
-    "Mean individual income rank of spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
+    "Number of Children Born to Parents at a Given Income Percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
+    "Mean Child Family (HSousehold) Income Rank for Children with Mothers Born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
+    "Percentage of Children with College Attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
+    "Mean Number of Weekly Working Hours Over the Past Year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
+    "Percentage of Children Incarcerated" : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
+    "Percentage of Children Without a High School Degree or GED" : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
+    "Percentage of Children Employed at Age 30 or Older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
+    "Mean Wage Rank of Children at Age 30 or Older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
+    "Mean Child Individual Income Rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
+    "Mean Child Individual Income Rank for Children with Single Parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
+    "Mean Individual Income Rank of Spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
 };
 
 const svg = d3.select('#vis')
@@ -111,7 +111,6 @@ function setupSelector(){
         .default(targetPercentile)
         .on('onchange', (val) => {
             targetPercentile = +val 
-            // updateAxes();
             updateVis() 
         });
 
@@ -151,9 +150,10 @@ function updateAxes(){
     xScale = d3.scaleBand()
         .domain(categories[xVar])
         .range([0, width]);
+
     temp = d3.max(categories[xVar], key => allData.find(d => d.par_pctile === targetPercentile)[key])
+
     yScale = d3.scaleLinear()
-        //.domain([0, temp + (1/10) * temp])
         .domain([0, d3.max(allData, d => d3.max(categories[xVar], key => d[key]))])
         .range([height, 0]);
 
@@ -187,56 +187,44 @@ function updateAxes(){
         .attr('y', height + margin.bottom - 20)
         .style('text-anchor', 'middle')
         .text(xVar);
-
-    // svg.append('text')
-    //     .attr('class', 'labels')
-    //     .attr('transform', 'rotate(-90)')
-    //     .attr('x', -height / 2)
-    //     .attr('y', -margin.left + 40)
-    //     .style('text-anchor', 'middle')
-    //     .text(yVar);
-
     
-    // Y-axis label (rotated)
     svg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
         .attr("y", -margin.left + 40)
         .attr("text-anchor", "middle")
         .text( function(){
-            if(xVar == 'Number of children born to parents at a given income percentile'){
-                return 'number'
-            }
-            if(xVar == 'Number of children born to parents at a given income percentile' ||
-                xVar == 'Mean child family (household) income rank for children with mothers born in the U.S.' ||
-                xVar == 'Mean number of weekly working hours over the past year (2018)' ||
-                xVar == 'Mean wage rank of children at age 30 or older' ||
-                xVar == 'Mean child individual income rank' ||
-                xVar == 'Mean child individual income rank for children with single parents' ||
-                xVar == 'Mean individual income rank of spouse'){
-                return 'rank'
+            if(xVar == "Number of Children Born to Parents at a Given Income Percentile"){
+                return 'Number of Children'
+            }else if(xVar == "Mean Number of Weekly Working Hours Over the Past Year (2018)"){
+                return 'Number of Hours'
+            }else if(xVar == "Mean Child Family (HSousehold) Income Rank for Children with Mothers Born in the U.S." ||
+                xVar == "Mean Wage Rank of Children at Age 30 or Older" ||
+                xVar == "Mean Child Individual Income Rank" ||
+                xVar == "Mean Child Individual Income Rank for Children with Single Parents" ||
+                xVar == "Mean Individual Income Rank of Spouse"){
+                return 'Income Rank'
             }else{
-                return 'percent'
+                return 'Percent (%)'
             }
-        } ) // Displays the current y-axis variable
+        } ) 
         .attr('class', 'labels')
     
-        /**
-         * 
-const categories = {
-    "Number of children born to parents at a given income percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
-    "Mean child family (household) income rank for children with mothers born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
-    "Percentage of children with college attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
-    "Mean number of weekly working hours over the past year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
-    "Percentage of children incarcerated." : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
-    "Percentage of children without a high school degree or GED." : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
-    "Percentage of children employed at age 30 or older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
-    "Mean wage rank of children at age 30 or older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
-    "Mean child individual income rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
-    "Mean child individual income rank for children with single parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
-    "Mean individual income rank of spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
-};
-         */
+        /*
+            const categories = {
+                "Number of children born to parents at a given income percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
+                "Mean child family (household) income rank for children with mothers born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
+                "Percentage of children with college attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
+                "Mean number of weekly working hours over the past year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
+                "Percentage of children incarcerated." : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
+                "Percentage of children without a high school degree or GED." : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
+                "Percentage of children employed at age 30 or older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
+                "Mean wage rank of children at age 30 or older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
+                "Mean child individual income rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
+                "Mean child individual income rank for children with single parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
+                "Mean individual income rank of spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
+            };
+        */
 }
   
 function updateVis(){
@@ -274,7 +262,6 @@ function updateVis(){
         .attr("y", d => yScale(currentData[d]))
         .attr("height", d => height - yScale(currentData[d]))
         
-
     bars.exit()
         .remove();      
 }

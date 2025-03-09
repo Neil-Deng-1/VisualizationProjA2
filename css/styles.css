@@ -1,9 +1,9 @@
 /* Reset default styles */
 * {
-    font-family: 'Arial';
+    font-family: 'Times New Roman', Times, serif;
     max-width: 800px;
     margin: 0px auto;
-    line-height: 1.8; 
+    line-height: 1; 
     font-size: 12px;  
 }
 
