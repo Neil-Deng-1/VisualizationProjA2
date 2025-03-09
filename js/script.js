@@ -4,20 +4,20 @@ const margin = { top: 80, right: 60, bottom: 60, left: 100 };
 const width = 800 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 const t = 500;
-let targetPercentile = 50, xVar = "A", xScale, yScale, sizeScale
+let targetPercentile = 50, xVar = "Percentage of children with college attendance", xScale, yScale, sizeScale
 const colorScale = d3.scaleOrdinal(d3.schemeSet2);
 const categories = {
-    "A" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
-    "B" : ["kfr_nativemom_aian_pooled", "kfr_nativemom_asian_pooled", "kfr_nativemom_black_pooled", "kfr_nativemom_hisp_pooled", "kfr_nativemom_white_pooled"],
-    "C" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
-    "D" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
-    "E" : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
-    "F" : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
-    "G" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
-    "H" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
-    "I" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
-    "J" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
-    "K" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
+    "Number of children born to parents at a given income percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
+    "Mean child family (household) income rank for children with mothers born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
+    "Percentage of children with college attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
+    "Mean number of weekly working hours over the past year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
+    "Percentage of children incarcerated." : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
+    "Percentage of children without a high school degree or GED." : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
+    "Percentage of children employed at age 30 or older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
+    "Mean wage rank of children at age 30 or older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
+    "Mean child individual income rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
+    "Mean child individual income rank for children with single parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
+    "Mean individual income rank of spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
 };
 
 const svg = d3.select('#vis')
@@ -38,11 +38,11 @@ function init(){
             count_hisp_pooled: +d.count_hisp_pooled,
             count_white_pooled: +d.count_white_pooled,
 
-            kfr_nativemom_aian_pooled: +d.kfr_nativemom_aian_pooled,
-            kfr_nativemom_asian_pooled: +d.kfr_nativemom_asian_pooled,
-            kfr_nativemom_black_pooled: +d.kfr_nativemom_black_pooled,
-            kfr_nativemom_hisp_pooled: +d.kfr_nativemom_hisp_pooled,
-            kfr_nativemom_white_pooled: +d.kfr_nativemom_white_pooled,
+            nativemom_aian: +d.kfr_nativemom_aian_pooled,
+            nativemom_asian: +d.kfr_nativemom_asian_pooled,
+            nativemom_black: +d.kfr_nativemom_black_pooled,
+            nativemom_hispanic: +d.kfr_nativemom_hisp_pooled,
+            nativemom_white: +d.kfr_nativemom_white_pooled,
 
             kid_college_black_female: +d.kid_college_black_female,
             kid_college_black_male: +d.kid_college_black_male,
@@ -195,6 +195,48 @@ function updateAxes(){
     //     .attr('y', -margin.left + 40)
     //     .style('text-anchor', 'middle')
     //     .text(yVar);
+
+    
+    // Y-axis label (rotated)
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 40)
+        .attr("text-anchor", "middle")
+        .text( function(){
+            if(xVar == 'Number of children born to parents at a given income percentile'){
+                return 'number'
+            }
+            if(xVar == 'Number of children born to parents at a given income percentile' ||
+                xVar == 'Mean child family (household) income rank for children with mothers born in the U.S.' ||
+                xVar == 'Mean number of weekly working hours over the past year (2018)' ||
+                xVar == 'Mean wage rank of children at age 30 or older' ||
+                xVar == 'Mean child individual income rank' ||
+                xVar == 'Mean child individual income rank for children with single parents' ||
+                xVar == 'Mean individual income rank of spouse'){
+                return 'rank'
+            }else{
+                return 'percent'
+            }
+        } ) // Displays the current y-axis variable
+        .attr('class', 'labels')
+    
+        /**
+         * 
+const categories = {
+    "Number of children born to parents at a given income percentile" : ["count_aian_pooled", "count_asian_pooled", "count_black_pooled", "count_hisp_pooled", "count_white_pooled"],
+    "Mean child family (household) income rank for children with mothers born in the U.S." : ["nativemom_aian", "nativemom_asian", "nativemom_black", "nativemom_hispanic", "nativemom_white"],
+    "Percentage of children with college attendance" : ["kid_college_black_female", "kid_college_black_male", "kid_college_white_female", "kid_college_white_male"],
+    "Mean number of weekly working hours over the past year (2018)" : ["kid_hours_black_female", "kid_hours_black_male", "kid_hours_white_female", "kid_hours_white_male"],
+    "Percentage of children incarcerated." : ["kid_jail_black_female", "kid_jail_black_male", "kid_jail_white_female", "kid_jail_white_male"],
+    "Percentage of children without a high school degree or GED." : ["kid_no_hs_black_female", "kid_no_hs_black_male", "kid_no_hs_white_female", "kid_no_hs_white_male"],
+    "Percentage of children employed at age 30 or older" : ["kid_pos_hours_black_female", "kid_pos_hours_black_male", "kid_pos_hours_white_female", "kid_pos_hours_white_male"],
+    "Mean wage rank of children at age 30 or older" : ["kid_wage_rank_black_female", "kid_wage_rank_black_male", "kid_wage_rank_white_female", "kid_wage_rank_white_male"],
+    "Mean child individual income rank" : ["kir_black_female", "kir_black_male", "kir_white_female", "kir_white_male"],
+    "Mean child individual income rank for children with single parents" : ["kir_1par_black_male", "kir_1par_white_male", "kir_2par_black_male", "kir_2par_white_male"],
+    "Mean individual income rank of spouse" : ["spouse_rank_black_female", "spouse_rank_black_male", "spouse_rank_white_female", "spouse_rank_white_male"]
+};
+         */
 }
   
 function updateVis(){
